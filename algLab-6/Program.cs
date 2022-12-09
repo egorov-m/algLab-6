@@ -4,7 +4,8 @@
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello, World!");
+           HashMap hashMap = new HashMap();
+
         }
     }
 }
