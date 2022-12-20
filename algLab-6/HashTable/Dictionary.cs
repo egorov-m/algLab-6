@@ -12,6 +12,18 @@ namespace algLab_6.HashTable
         /// <summary> Размер хеш-таблицы </summary>
         private readonly int _size;
 
+        /// <summary> Получить коэффициент заполнения </summary>
+        public double FillFactor => (double) Count / _size;
+
+        /// <summary> Получить максимальную длину цепочки для хеш-таблицы </summary>
+        public int MaxLengthChain => _items.Where(x => x != null).Max(x => x.Count);
+
+        /// <summary> Получить минимальную длину цепочки для хеш-таблицы </summary>
+        public int MinLengthChain => _items.Where(x => x != null).Min(x => x.Count);
+
+        /// <summary> Получить длины цепочек для хеш-таблицы </summary>
+        public IEnumerable<int> LengthsChains => _items.Where(x => x != null).Select(x => x.Count);
+
         /// <summary> Количество элементов в словаре </summary>
         public int Count { get; private set; }
 
@@ -193,7 +205,7 @@ namespace algLab_6.HashTable
         {
             get
             {
-                foreach (var item in _items)
+                foreach (var item in _items.Where(x => x != null))
                 {
                     foreach (var pair in item)
                     {
@@ -207,7 +219,7 @@ namespace algLab_6.HashTable
         {
             get
             {
-                foreach (var item in _items)
+                foreach (var item in _items.Where(x => x != null))
                 {
                     foreach (var pair in item)
                     {
@@ -228,7 +240,7 @@ namespace algLab_6.HashTable
         private List<TKey> GetKeys()
         {
             var collection = new List<TKey>();
-            foreach (var item in _items)
+            foreach (var item in _items.Where(x => x != null))
             {
                 collection.AddRange(item.Select(pair => pair.Key));
             }
@@ -239,7 +251,7 @@ namespace algLab_6.HashTable
         private List<TValue> GetValues()
         {
             var collection = new List<TValue>();
-            foreach (var item in _items)
+            foreach (var item in _items.Where(x => x != null))
             {
                 collection.AddRange(item.Select(pair => pair.Value));
             }
