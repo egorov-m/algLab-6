@@ -78,7 +78,6 @@ namespace algLab_6.HashTable
         /// <param name="item"> Элемент для вставки </param>
         protected void Insert(KeyValuePair<TKey, TValue?> item)
         {
-            if (item.Key == null) throw new ArgumentNullException(nameof(item.Key));
             var position = GetListPosition(item.Key);
             var linkedList = GetLinkedList(position);
 
@@ -176,6 +175,7 @@ namespace algLab_6.HashTable
         /// <param name="key"> Ключ </param>
         public TValue? GetValue(TKey key)
         {
+            if (key == null) throw new ArgumentNullException(nameof(key));
             var position = GetListPosition(key);
             var linkedList = GetLinkedList(position);
             foreach (var item in linkedList)
