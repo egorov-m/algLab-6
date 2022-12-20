@@ -1,4 +1,10 @@
-﻿using System.Collections;
+﻿using algLab_6.HashTable;
+using System.Collections;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Drawing;
+using System.Security.Cryptography;
+using System.Text;
 
 namespace algLab_6
 {
@@ -6,66 +12,70 @@ namespace algLab_6
     {
         static void Main(string[] args)
         {
-            var hashMap = new HashMap();
+            //Console.Write("Ключ: ");
+            //int key = Convert.ToInt32(Console.ReadLine());
+            //Console.Write("MD5: " + GetHashCodeHMACMD5(key, 1000));
+            //Console.WriteLine();
+            //Console.Write("SHA256: " + GetHashCodeSHA256(key, 1000));
+            //Console.WriteLine();
+            //Console.WriteLine("FNV: " + GetHashCodeFNV(key, 1000));
 
-            // Добавляем данные в хеш таблицу в виде пар Ключ-Значение.
-            //hashMap.Add("Little Prince", "I never wished you any sort of harm; but you wanted me to tame you...");
-            //hashMap.Add("Fox", "And now here is my secret, a very simple secret: It is only with the heart that one can see rightly; what is essential is invisible to the eye.");
-            //hashMap.Add("Rose", "Well, I must endure the presence of two or three caterpillars if I wish to become acquainted with the butterflies.");
-            //hashMap.Add("King", "He did not know how the world is simplified for kings. To them, all men are subjects.");
-
-            hashMap.Add("1", "Kate");
-            hashMap.Add("1", "Karolina");
-            hashMap.Add("2", "Peter");
-            hashMap.Add("3", "Misha");
-
-
-
-            // Выводим хранимые значения на экран.
-            ShowHashTable(hashMap, "Created hashtable.");
-            Console.ReadLine();
-
-            // Удаляем элемент из хеш таблицы по ключу
-            // и выводим измененную таблицу на экран.
-            //hashMap.Delete("King");
-            //ShowHashTable(hashMap, "Delete item from hashtable.");
-            Console.ReadLine();
-
-            // Получаем хранимое значение из таблицы по ключу.
-            //Console.WriteLine("Little Prince say:");
-            //var text = hashMap.Search("Little Prince");
-            //Console.WriteLine(text);
-            Console.ReadLine();
         }
 
 
-        private static void ShowHashTable(HashMap hashMap, string title)
-        {
-            // Проверяем входные аргументы.
-            if (hashMap == null)
-            {
-                throw new ArgumentNullException(nameof(hashMap));
-            }
 
-            if (string.IsNullOrEmpty(title))
-            {
-                throw new ArgumentNullException(nameof(title));
-            }
+        //public static int GetHashCodeFNV(object key, int sizeHashTable)
+        //{
 
-            // Выводим все имеющие пары хеш-значение
-            Console.WriteLine(title);
-            foreach (var item in hashMap.Items)
-            {
-                // Выводим хеш
-                Console.WriteLine(item.Key);
+        //    const uint fnv_prime = 0x811C9DC5;
+        //    uint hash = 0;
+        //    uint i = 0;
+        //    string str = key.ToString();
 
-                // Выводим все значения хранимые под этим хешем.
-                foreach (var value in item.Value)
-                {
-                    Console.WriteLine($"\t{value.Key} - {value.Value}");
-                }
-            }
-            Console.WriteLine();
-        }
+
+        //    for (i = 0; i < str.Length; i++)
+        //    {
+        //        hash *= fnv_prime;
+        //        hash ^= ((byte)str[(int)i]);
+        //    }
+
+        //    return (int)hash % sizeHashTable;
+        //}
+
+
+        //public static int GetHashCodeHMACMD5(object key, int sizeHashTable)
+        //{
+        //    byte[] secrectKey = Encoding.UTF8.GetBytes(key.ToString());
+        //    using (HMACMD5 md5 = new HMACMD5(secrectKey))
+        //    {
+        //        byte[] bytes_md5_in = Encoding.UTF8.GetBytes(key.ToString());
+        //        byte[] bytes_md5_out = md5.ComputeHash(bytes_md5_in);
+        //        string str_md5_out = BitConverter.ToString(bytes_md5_out);
+        //        str_md5_out = str_md5_out.Replace("-", "");
+
+        //        int sum = 0;
+        //        for (int i = 0; i < str_md5_out.Length; i++)
+        //        { 
+        //            sum += Convert.ToInt32(str_md5_out[i]);
+        //        }
+        //        return sum % sizeHashTable;
+        //    }
+        //}
+
+        //public static int GetHashCodeSHA256(object key, int sizeHashTable)
+        //{
+        //    using (SHA256 sha256 = SHA256.Create())
+        //    {
+        //        byte[] bytes_sha256_in = Encoding.UTF8.GetBytes(key.ToString());
+        //        byte[] bytes_sha256_out = sha256.ComputeHash(bytes_sha256_in);
+        //        string str_sha256_out = BitConverter.ToString(bytes_sha256_out);
+        //        str_sha256_out = str_sha256_out.Replace("-", "");
+
+        //        int resultSHA256 = BitConverter.ToInt32(bytes_sha256_out, 0);
+
+        //        return resultSHA256 % sizeHashTable;
+        //    }
+        //}
+
     }
 }
