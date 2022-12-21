@@ -1,4 +1,4 @@
-﻿namespace algLab_6.HashTable
+﻿namespace algLab_6
 {
     /// <summary> Хеш-таблица, разрешение коллизий методом открытой адресации </summary>
     /// <typeparam name="TKey"> Тип ключа </typeparam>
@@ -18,15 +18,15 @@
         private readonly HashMethodType[] _hashMethodType;
 
         /// <summary> Функция линейного хеширования </summary>
-        private static readonly Func<Func<object, int, int>, object, int, int, int> LinearHashing = 
+        private static readonly Func<Func<object, int, int>, object, int, int, int> LinearHashing =
             (f, key, sizeHashTable, index) => (f(key, sizeHashTable) + index) % sizeHashTable;
 
         /// <summary> Функция квадратичного хеширования </summary>
-        private static readonly Func<Func<object, int, int>, object, int, int, int> QuadraticHashing = 
-            (f, key, sizeHashTable, index) => (f(key, sizeHashTable) + (int) Math.Pow(index, 2)) % sizeHashTable;
+        private static readonly Func<Func<object, int, int>, object, int, int, int> QuadraticHashing =
+            (f, key, sizeHashTable, index) => (f(key, sizeHashTable) + (int)Math.Pow(index, 2)) % sizeHashTable;
 
         /// <summary> Функция двойного хеширования</summary>
-        private static readonly Func<Func<object, int, int>, Func<object, int, int>, object, int, int, int> DoubleHashing = 
+        private static readonly Func<Func<object, int, int>, Func<object, int, int>, object, int, int, int> DoubleHashing =
             (f1, f2, key, sizeHashTable, index) => (f1(key, sizeHashTable) + index * f2(key, sizeHashTable)) % sizeHashTable;
 
         /// <summary> Количество элементов в хеш-таблице </summary>
@@ -41,9 +41,9 @@
             _size = size;
             _hashProbingType = hashProbingType;
 
-            if (hashMethodType.Length > 1)  _hashMethodType = hashMethodType;
-            else _hashMethodType = new[] {hashMethodType[0], HashMethodType.Div};
-            
+            if (hashMethodType.Length > 1) _hashMethodType = hashMethodType;
+            else _hashMethodType = new[] { hashMethodType[0], HashMethodType.Div };
+
             _items = new KeyValuePair<TKey, TValue?>[size];
         }
 
@@ -54,7 +54,7 @@
             if (!IsSizeCorrect(size)) throw new AggregateException(nameof(size));
             _size = size;
             _hashProbingType = HashProbingType.Linear;
-            _hashMethodType = new[] {HashMethodType.Div, HashMethodType.Multi};
+            _hashMethodType = new[] { HashMethodType.Div, HashMethodType.Multi };
             _items = new KeyValuePair<TKey, TValue?>[size];
         }
 
@@ -63,7 +63,7 @@
         {
             _size = 1000;
             _hashProbingType = HashProbingType.Linear;
-            _hashMethodType = new[] {HashMethodType.Div, HashMethodType.Multi};
+            _hashMethodType = new[] { HashMethodType.Div, HashMethodType.Multi };
             _items = new KeyValuePair<TKey, TValue?>[_size];
         }
 
@@ -73,7 +73,7 @@
             var isOpen = false;
             for (var i = 0; i < _size; i++)
             {
-                if (_items[i].Equals(default (KeyValuePair<TKey, TValue?>))) isOpen = true;
+                if (_items[i].Equals(default(KeyValuePair<TKey, TValue?>))) isOpen = true;
             }
 
             return isOpen;
@@ -133,7 +133,7 @@
         /// <summary> Получить хеш-код по заданному ключу и индексу в соответствии с параметрами хеш-таблицы </summary>
         /// <param name="key"> Ключ </param>
         /// <param name="index"> Индекс </param>
-        protected  int GetHash(TKey key, int index)
+        protected int GetHash(TKey key, int index)
         {
             return _hashProbingType switch
             {

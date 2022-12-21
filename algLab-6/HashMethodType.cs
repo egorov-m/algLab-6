@@ -1,4 +1,4 @@
-﻿namespace algLab_6.HashTable
+﻿namespace algLab_6
 {
     /// <summary> Тип хеширования </summary>
     public enum HashMethodType

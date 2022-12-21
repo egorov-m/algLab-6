@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace algLab_6.HashTable
+namespace algLab_6
 {
     class GenerateDictionary
     {
@@ -18,13 +18,13 @@ namespace algLab_6.HashTable
 
             List<int> keys = new List<int>();
             List<string> values = new List<string>();
-            
+
             //Генерация ключей
-            for(int i = 0; i < sizeHash; i++)
+            for (int i = 0; i < sizeHash; i++)
                 keys.Add(start[i] + randomKeys.Next() + i);
 
 
-            
+
             //Генерация значений
             for (int j = 0; j < sizeHash; j++)
             {
@@ -33,13 +33,13 @@ namespace algLab_6.HashTable
                 {
                     char a = (char)randomValues.Next(0, 255);
                     s += a;
-                    
+
                 }
                 values.Add(s);
             }
-                
-            dict.Add(keys.ToArray(), values.ToArray());   
-           
+
+            dict.Add(keys.ToArray(), values.ToArray());
+
         }
     }
 }

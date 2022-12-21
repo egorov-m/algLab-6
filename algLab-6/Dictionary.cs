@@ -1,19 +1,19 @@
 ﻿using System.Collections;
 
-namespace algLab_6.HashTable
+namespace algLab_6
 {
     /// <summary> Словарь: хеш-таблица, разрешение коллизий методом цепочек </summary>
     /// <typeparam name="TKey"> Тип ключа </typeparam>
     /// <typeparam name="TValue"> Тип значения </typeparam>
-    public class Dictionary<TKey, TValue> : IDictionary<TKey,TValue>, 
-                                            IDictionary, 
+    public class Dictionary<TKey, TValue> : IDictionary<TKey, TValue>,
+                                            IDictionary,
                                             IReadOnlyDictionary<TKey, TValue>
     {
         /// <summary> Размер хеш-таблицы </summary>
         private readonly int _size;
 
         /// <summary> Получить коэффициент заполнения </summary>
-        public double FillFactor => (double) Count / _size;
+        public double FillFactor => (double)Count / _size;
 
         /// <summary> Получить максимальную длину цепочки для хеш-таблицы </summary>
         public int MaxLengthChain => _items.Where(x => x != null).Max(x => x.Count);
@@ -83,7 +83,7 @@ namespace algLab_6.HashTable
 
             foreach (var pair in linkedList)
             {
-                if (pair.Key != null && pair.Key.Equals(item.Key)) 
+                if (pair.Key != null && pair.Key.Equals(item.Key))
                     throw new ArgumentException("Элемент по указанному ключу уже существует.");
             }
 
@@ -308,7 +308,7 @@ namespace algLab_6.HashTable
         /// <param name="key"> Ключ </param>
         public bool Contains(object? key)
         {
-            return IsCompatibleKey(key) && ContainsKey((TKey) key);
+            return IsCompatibleKey(key) && ContainsKey((TKey)key);
         }
 
         IDictionaryEnumerator IDictionary.GetEnumerator()
@@ -321,7 +321,7 @@ namespace algLab_6.HashTable
         /// <param name="key"> Ключ </param>
         public void Remove(object key)
         {
-            if (IsCompatibleKey(key)) Remove((TKey) key);
+            if (IsCompatibleKey(key)) Remove((TKey)key);
         }
 
         /// <summary> Фиксированный ли размер хеш-таблицы </summary>
@@ -334,12 +334,12 @@ namespace algLab_6.HashTable
         {
             get
             {
-                if (IsCompatibleKey(key)) return GetValue((TKey) key);
+                if (IsCompatibleKey(key)) return GetValue((TKey)key);
                 return null;
             }
             set
             {
-                if (IsCompatibleKey(key) && IsCompatibleValue(value)) SetValue((TKey) key, (TValue) value);
+                if (IsCompatibleKey(key) && IsCompatibleValue(value)) SetValue((TKey)key, (TValue)value);
             }
         }
 
@@ -362,7 +362,7 @@ namespace algLab_6.HashTable
 
         public void Add(object key, object? value)
         {
-            if (IsCompatibleKey(key) && IsCompatibleValue(value)) Add((TKey) key, (TValue) value);
+            if (IsCompatibleKey(key) && IsCompatibleValue(value)) Add((TKey)key, (TValue)value);
         }
 
         /// <summary> Очистить словарь </summary>
@@ -382,7 +382,7 @@ namespace algLab_6.HashTable
         public bool Contains(KeyValuePair<TKey, TValue> item)
         {
             var t = GetValue(item.Key);
-            if ((t == null && item.Value == null) || t.Equals(item.Value)) return Contains(item.Key);
+            if (t == null && item.Value == null || t.Equals(item.Value)) return Contains(item.Key);
             return false;
         }
 
@@ -414,7 +414,7 @@ namespace algLab_6.HashTable
         public bool Remove(KeyValuePair<TKey, TValue> item)
         {
             var t = GetValue(item.Key);
-            if ((t == null && item.Value == null) || t.Equals(item.Value)) return Remove(item.Key);
+            if (t == null && item.Value == null || t.Equals(item.Value)) return Remove(item.Key);
             return false;
         }
 
@@ -433,7 +433,8 @@ namespace algLab_6.HashTable
 
             if (array.Length - index < Count) throw new ArgumentOutOfRangeException(nameof(index));
 
-            if (array is KeyValuePair<TKey, TValue>[] pairs) {
+            if (array is KeyValuePair<TKey, TValue>[] pairs)
+            {
                 CopyTo(pairs, index);
             }
             else
@@ -449,9 +450,9 @@ namespace algLab_6.HashTable
         {
             get
             {
-                if (_syncRoot == null) 
+                if (_syncRoot == null)
                 {
-                    Interlocked.CompareExchange<object>(ref _syncRoot, new object(), null);    
+                    Interlocked.CompareExchange<object>(ref _syncRoot, new object(), null);
                 }
 
                 return _syncRoot;
