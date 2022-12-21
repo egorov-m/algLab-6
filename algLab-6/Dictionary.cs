@@ -16,13 +16,13 @@ namespace algLab_6
         public double FillFactor => (double)Count / _size;
 
         /// <summary> Получить максимальную длину цепочки для хеш-таблицы </summary>
-        public int MaxLengthChain => _items.Where(x => x != null).Max(x => x.Count);
+        public int MaxLengthChain => _items.Max(x => x?.Count ?? 0);
 
         /// <summary> Получить минимальную длину цепочки для хеш-таблицы </summary>
-        public int MinLengthChain => _items.Where(x => x != null).Min(x => x.Count);
+        public int MinLengthChain => _items.Min(x => x?.Count ?? 0);
 
         /// <summary> Получить длины цепочек для хеш-таблицы </summary>
-        public IEnumerable<int> LengthsChains => _items.Where(x => x != null).Select(x => x.Count);
+        public IEnumerable<int> LengthsChains => _items.Select(x => x?.Count ?? 0);
 
         /// <summary> Количество элементов в словаре </summary>
         public int Count { get; private set; }

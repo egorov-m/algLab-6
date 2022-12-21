@@ -17,7 +17,7 @@ namespace algLab_6
         /// <param name="sizeHashTable"> Размер Хеш-таблицы </param>
         public static int GetHashCodeMultiMethod(this object key, int sizeHashTable)
         {
-            return (int) (sizeHashTable * (key.GetHashCode() * GoldenRatioConst % 1));
+            return (int) Math.Abs(sizeHashTable * (key.GetHashCode() * GoldenRatioConst % 1));
         }
 
         /// <summary> Получить хеш-код MD5 (HMACMD) </summary>
@@ -37,7 +37,7 @@ namespace algLab_6
             {
                 sum += Convert.ToInt32(str_md5_out[i]);
             }
-            return sum % sizeHashTable;
+            return Math.Abs(sum % sizeHashTable);
         }
 
         /// <summary> Получить хеш-код SHA256 </summary>
@@ -50,7 +50,7 @@ namespace algLab_6
             var bytes_sha256_out = sha256.ComputeHash(bytes_sha256_in);
             var resultSHA256 = BitConverter.ToInt32(bytes_sha256_out, 0);
 
-            return resultSHA256 % sizeHashTable;
+            return Math.Abs(resultSHA256 % sizeHashTable);
         }
 
         /// <summary> Получить хеш-код FNV </summary>
@@ -68,7 +68,7 @@ namespace algLab_6
                 hash ^= ((byte)str[(int)i]);
             }
 
-            return (int) hash % sizeHashTable;
+            return (int) Math.Abs(hash % sizeHashTable);
         }
     }
 }
