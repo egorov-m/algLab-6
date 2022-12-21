@@ -267,6 +267,9 @@ namespace algLab_6.HashTable
             {
                 HashMethodType.Div => key.GetHashCodeDivMethod(_size),
                 HashMethodType.Multi => key.GetHashCodeMultiMethod(_size),
+                HashMethodType.Md5 => key.GetHashCodeHMACMD5(_size),
+                HashMethodType.Sha256 => key.GetHashCodeSHA256(_size),
+                HashMethodType.Fnv => key.GetHashCodeFNV(_size),
                 _ => key.GetHashCodeDivMethod(_size)
             };
         }

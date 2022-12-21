@@ -11,8 +11,41 @@
         /// <summary> Элементы хеш-таблицы </summary>
         private readonly KeyValuePair<TKey, TValue?>[] _items;
 
+        /// <summary> Класс хеш-функции </summary>
+        private readonly HashProbingType _hashProbingType;
+
+        /// <summary> Метод хеширования </summary>
+        private readonly HashMethodType[] _hashMethodType;
+
+        /// <summary> Функция линейного хеширования </summary>
+        private static readonly Func<Func<object, int, int>, object, int, int, int> LinearHashing = 
+            (f, key, sizeHashTable, index) => (f(key, sizeHashTable) + index) % sizeHashTable;
+
+        /// <summary> Функция квадратичного хеширования </summary>
+        private static readonly Func<Func<object, int, int>, object, int, int, int> QuadraticHashing = 
+            (f, key, sizeHashTable, index) => (f(key, sizeHashTable) + (int) Math.Pow(index, 2)) % sizeHashTable;
+
+        /// <summary> Функция двойного хеширования</summary>
+        private static readonly Func<Func<object, int, int>, Func<object, int, int>, object, int, int, int> DoubleHashing = 
+            (f1, f2, key, sizeHashTable, index) => (f1(key, sizeHashTable) + index * f2(key, sizeHashTable)) % sizeHashTable;
+
         /// <summary> Количество элементов в хеш-таблице </summary>
         public int Count { get; private set; }
+
+        /// <summary> Создать хеш-таблицу </summary>
+        /// <param name="size"> Размер хеш-таблицы </param>
+        /// <param name="hashProbingType"> Тип класса используемой хеш-функции </param>
+        public Hashtable(int size, HashProbingType hashProbingType, params HashMethodType[] hashMethodType)
+        {
+            if (!IsSizeCorrect(size)) throw new AggregateException(nameof(size));
+            _size = size;
+            _hashProbingType = hashProbingType;
+
+            if (hashMethodType.Length > 1)  _hashMethodType = hashMethodType;
+            else _hashMethodType = new[] {hashMethodType[0], HashMethodType.Div};
+            
+            _items = new KeyValuePair<TKey, TValue?>[size];
+        }
 
         /// <summary> Создать хеш-таблицу </summary>
         /// <param name="size"> Размер хеш-таблицы </param>
@@ -20,6 +53,8 @@
         {
             if (!IsSizeCorrect(size)) throw new AggregateException(nameof(size));
             _size = size;
+            _hashProbingType = HashProbingType.Linear;
+            _hashMethodType = new[] {HashMethodType.Div, HashMethodType.Multi};
             _items = new KeyValuePair<TKey, TValue?>[size];
         }
 
@@ -27,6 +62,8 @@
         public Hashtable()
         {
             _size = 1000;
+            _hashProbingType = HashProbingType.Linear;
+            _hashMethodType = new[] {HashMethodType.Div, HashMethodType.Multi};
             _items = new KeyValuePair<TKey, TValue?>[_size];
         }
 
@@ -81,16 +118,48 @@
         protected void Insert(TKey key, TValue value)
         {
             var index = 0;
-            var hashCode = (key.GetHashCodeDivMethod(_size) + index) % _size; //0; // Метод вычисления хеша GetHash(key, size, index);
+            var hashCode = GetHash(key, index);
 
             while (!_items[hashCode].Equals(default(KeyValuePair<TKey, TValue>)) && !_items[hashCode].Key.Equals(key))
             {
                 index++;
-                hashCode = (key.GetHashCodeDivMethod(_size) + index) % _size; // Метод вычисления хеша GetHash(key, size, index);
+                hashCode = GetHash(key, index);
             }
 
             _items[hashCode] = new KeyValuePair<TKey, TValue?>(key, value);
             Count++;
+        }
+
+        /// <summary> Получить хеш-код по заданному ключу и индексу в соответствии с параметрами хеш-таблицы </summary>
+        /// <param name="key"> Ключ </param>
+        /// <param name="index"> Индекс </param>
+        protected  int GetHash(TKey key, int index)
+        {
+            return _hashProbingType switch
+            {
+                HashProbingType.Linear =>
+                    LinearHashing(GetHashMethod(_hashMethodType[0]), key, _size, index),
+                HashProbingType.Quadratic => QuadraticHashing(GetHashMethod(_hashMethodType[0]), key, _size,
+                    index),
+                HashProbingType.Double => DoubleHashing(GetHashMethod(_hashMethodType[0]),
+                    GetHashMethod(_hashMethodType[1]), key, _size, index),
+                _ => LinearHashing(GetHashMethod(_hashMethodType[0]), key, _size, index)
+            };
+        }
+
+        /// <summary> Получить метод хеширования в соответствии с типом </summary>
+        /// <param name="hashMethodType"> Тип метода хеширования </param>
+        protected static Func<object, int, int> GetHashMethod(HashMethodType hashMethodType)
+        {
+            return hashMethodType switch
+            {
+                HashMethodType.Div => HashFunctionsExtensions.GetHashCodeDivMethod,
+                HashMethodType.Multi => HashFunctionsExtensions.GetHashCodeMultiMethod,
+                HashMethodType.Md5 => HashFunctionsExtensions.GetHashCodeHMACMD5,
+                HashMethodType.Sha256 => HashFunctionsExtensions.GetHashCodeSHA256,
+                HashMethodType.Fnv => HashFunctionsExtensions.GetHashCodeFNV,
+                _ => HashFunctionsExtensions.GetHashCodeDivMethod
+            };
         }
 
         /// <summary> Получить значение по ключу </summary>
@@ -100,12 +169,12 @@
             if (key == null) throw new ArgumentNullException(nameof(key));
 
             var index = 0;
-            var hashCode = (key.GetHashCodeDivMethod(_size) + index) % _size; //0; // Метод вычисления хеша GetHash(key, size, index);
+            var hashCode = GetHash(key, index);
 
             while (!_items[hashCode].Equals(default(KeyValuePair<TKey, TValue>)) && !_items[hashCode].Key.Equals(key))
             {
                 index++;
-                hashCode = (key.GetHashCodeDivMethod(_size) + index) % _size; // Метод вычисления хеша GetHash(key, size, index);
+                hashCode = GetHash(key, index);
             }
 
             return _items[hashCode].Value;
@@ -116,12 +185,12 @@
         public bool Remove(TKey key)
         {
             var index = 0;
-            var hashCode = (key.GetHashCodeDivMethod(_size) + index) % _size; // Метод вычисления хеша GetHash(key, size, index);
+            var hashCode = GetHash(key, index);
 
             while (!_items[hashCode].Equals(default(KeyValuePair<TKey, TValue>)) && !_items[hashCode].Key.Equals(key))
             {
                 index++;
-                hashCode = (key.GetHashCodeDivMethod(_size) + index) % _size; // Метод вычисления хеша GetHash(key, size, index);
+                hashCode = GetHash(key, index);
             }
 
             if (_items[hashCode].Equals(default(KeyValuePair<TKey, TValue>)))

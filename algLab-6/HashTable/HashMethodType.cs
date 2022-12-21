@@ -3,6 +3,6 @@
     /// <summary> Тип хеширования </summary>
     public enum HashMethodType
     {
-        Div, Multi
+        Div, Multi, Md5, Sha256, Fnv
     }
 }
