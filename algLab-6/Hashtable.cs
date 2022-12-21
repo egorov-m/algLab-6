@@ -17,6 +17,9 @@
         /// <summary> Метод хеширования </summary>
         private readonly HashMethodType[] _hashMethodType;
 
+        /// <summary> Хеш-коды удалённых элементов</summary>
+        private readonly bool[] _removed;
+
         /// <summary> Функция линейного хеширования </summary>
         private static readonly Func<Func<object, int, int>, object, int, int, int> LinearHashing =
             (f, key, sizeHashTable, index) => (f(key, sizeHashTable) + index) % sizeHashTable;
@@ -32,6 +35,30 @@
         /// <summary> Количество элементов в хеш-таблице </summary>
         public int Count { get; private set; }
 
+        /// <summary> Получить длину самого длинного кластера в таблице </summary>
+        public int MaxClusterLength
+        {
+            get
+            {
+                var max = 0;
+                var current = 0;
+                foreach (var item in _items)
+                {
+                    if (!item.Equals(default(KeyValuePair<TKey, TValue>)))
+                    {
+                        current++;
+                    }
+                    else
+                    {
+                        max = Math.Max(max, current);
+                        current = 0;
+                    }
+                }
+
+                return Math.Max(max, current);
+            }
+        }
+
         /// <summary> Создать хеш-таблицу </summary>
         /// <param name="size"> Размер хеш-таблицы </param>
         /// <param name="hashProbingType"> Тип класса используемой хеш-функции </param>
@@ -45,6 +72,7 @@
             else _hashMethodType = new[] { hashMethodType[0], HashMethodType.Div };
 
             _items = new KeyValuePair<TKey, TValue?>[size];
+            _removed = new bool[_size];
         }
 
         /// <summary> Создать хеш-таблицу </summary>
@@ -56,6 +84,7 @@
             _hashProbingType = HashProbingType.Linear;
             _hashMethodType = new[] { HashMethodType.Div, HashMethodType.Multi };
             _items = new KeyValuePair<TKey, TValue?>[size];
+            _removed = new bool[_size];
         }
 
         /// <summary> Создать хеш-таблицу </summary>
@@ -65,6 +94,7 @@
             _hashProbingType = HashProbingType.Linear;
             _hashMethodType = new[] { HashMethodType.Div, HashMethodType.Multi };
             _items = new KeyValuePair<TKey, TValue?>[_size];
+            _removed = new bool[_size];
         }
 
         /// <summary> Проверка пропусков в хеш-таблице </summary>
@@ -127,6 +157,7 @@
             }
 
             _items[hashCode] = new KeyValuePair<TKey, TValue?>(key, value);
+            _removed[hashCode] = false;
             Count++;
         }
 
@@ -171,7 +202,7 @@
             var index = 0;
             var hashCode = GetHash(key, index);
 
-            while (!_items[hashCode].Equals(default(KeyValuePair<TKey, TValue>)) && !_items[hashCode].Key.Equals(key))
+            while ((!_items[hashCode].Equals(default(KeyValuePair<TKey, TValue>)) || _removed[hashCode]) && !_items[hashCode].Key.Equals(key))
             {
                 index++;
                 hashCode = GetHash(key, index);
@@ -187,7 +218,7 @@
             var index = 0;
             var hashCode = GetHash(key, index);
 
-            while (!_items[hashCode].Equals(default(KeyValuePair<TKey, TValue>)) && !_items[hashCode].Key.Equals(key))
+            while ((!_items[hashCode].Equals(default(KeyValuePair<TKey, TValue>)) || _removed[hashCode]) && !_items[hashCode].Key.Equals(key))
             {
                 index++;
                 hashCode = GetHash(key, index);
@@ -200,6 +231,7 @@
             else
             {
                 _items[hashCode] = default;
+                _removed[hashCode] = true;
                 Count--;
                 return true;
             }
