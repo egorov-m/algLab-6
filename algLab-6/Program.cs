@@ -12,14 +12,8 @@ namespace algLab_6
     {
         static void Main(string[] args)
         {
-            //Console.Write("Ключ: ");
-            //int key = Convert.ToInt32(Console.ReadLine());
-            //Console.Write("MD5: " + GetHashCodeHMACMD5(key, 1000));
-            //Console.WriteLine();
-            //Console.Write("SHA256: " + GetHashCodeSHA256(key, 1000));
-            //Console.WriteLine();
-            //Console.WriteLine("FNV: " + GetHashCodeFNV(key, 1000));
-
+            GenerateDictionary generate = new GenerateDictionary();
+            generate.GeneratingValuesandKeys();
         }
 
 
